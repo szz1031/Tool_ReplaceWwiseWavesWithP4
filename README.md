@@ -44,5 +44,5 @@ Wechat: kkxszz
 Email: kkxszz@gmail.com  
 
 ## 写给开发者
-开发环境是Python3.7，需要安装waapiclient （环境搭建可以参考溪夜老师的博客）
+开发环境是Python3.7，需要安装waapiclient （环境搭建可以参考溪夜老师的博客）  
 szz_wwiseManager.py 中留有一些我封装过的常用waapi功能，欢迎交流~
