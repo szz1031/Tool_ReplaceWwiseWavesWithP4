@@ -3,10 +3,10 @@
 这是一个方便使用P4对Wwise进行版本控制时，快速迭代音频资源的小工具  
 可以免去迭代资源时，人工找到wwise内路径并且手动选择orginal文件夹的步骤
 
-![图片1](https://user-images.githubusercontent.com/52338219/203681670-5960f688-7874-41e0-a6ed-0f0510015535.png)
+![图片1](https://user-images.githubusercontent.com/52338219/203681670-5960f688-7874-41e0-a6ed-0f0510015535.png)  
+## [下载页面](https://github.com/szz1031/Tool_ReplaceWwiseWavesWithP4/releases)
 
-
-## Install
+## Installation
 **1.电脑中安装了Perforce的情况下，打开控制台（Win+R 输入cmd然后回车）**  
 ![图片2](https://user-images.githubusercontent.com/52338219/203682044-033c33dd-a1ba-47b3-99c8-997dae674d28.png)
 
@@ -16,9 +16,8 @@ p4 set P4USER=您的P4用户名
 p4 set P4PASSWD=您的P4密码  
 p4 set P4CLIENT=WorkSpace全称  
 ![图片3](https://user-images.githubusercontent.com/52338219/203682135-a68529ba-2915-494c-8f72-78741689a71f.png)  
+(可以直接从P4登录窗口粘贴)  
 
-可以直接从P4登录窗口粘贴  
-![图片4](https://user-images.githubusercontent.com/52338219/203682095-7d98d62f-f30f-4d59-ac96-c481d05b59fd.png)  
 
 **3.打开wwise的用户设置，将WAMPport改为8070（可以不用改）**  
 ![图片5](https://user-images.githubusercontent.com/52338219/203683152-dbbe03b2-5893-44b8-ab8d-38d9315108d2.png)
@@ -38,3 +37,7 @@ p4 set P4CLIENT=WorkSpace全称
 如果不用P4，也是可以使用此工具的。  
 点击“批量替换”之前，将右边“自动Checkout”关闭即可。  
 ![图片7](https://user-images.githubusercontent.com/52338219/203690232-6e849533-3146-4782-8c96-1cfa001ca0e0.png)
+
+## Contact
+Wechat: kkxszz  
+Email: kkxszz@gmail.com  
