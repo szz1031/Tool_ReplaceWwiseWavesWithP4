@@ -32,7 +32,9 @@ p4 set P4CLIENT=WorkSpace全称
 如果P4登录失败，请点击显示P4账号信息进行检查，然后回到Install的第二步  
 
 **2.点击SelectFolder选择要导入的文件夹路径，点击“批量替换”开始工作**  
-等待“批处理完成”提示出现。可以回看过程中的记录。
+等待“批处理完成”提示出现。可以回看过程中的记录  
+![图片8](https://user-images.githubusercontent.com/52338219/203745063-d02d7e4a-0281-4bba-98a3-b47180be1cf9.png)  
+*(“完美替换”是指成功替换并且在P4中成功checkout)*
 
 ## Use Without P4
 如果不用P4，也是可以使用此工具的。  
