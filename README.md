@@ -1,4 +1,4 @@
-# Tool_ReplaceWavesInWwiseWithP4
+# Tool_ReplaceWwiseWavesWithP4
 *(English Version will be in the upcoming release）*  
 这是一个方便使用P4对Wwise进行版本控制时，快速迭代音频资源的小工具  
 可以免去迭代资源时，人工找到wwise内路径并且手动选择orginal文件夹的步骤
