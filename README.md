@@ -24,7 +24,7 @@ p4 set P4CLIENT=WorkSpace全称
 ![图片5](https://user-images.githubusercontent.com/52338219/203683152-dbbe03b2-5893-44b8-ab8d-38d9315108d2.png)
 
 
-# How To Use  
+## How To Use  
 **1.开启Wwise后运行 .exe工具**  
 它会自动尝试连接wwise和登录P4。 如果成功的话会如下显示：  
 ![图片6](https://user-images.githubusercontent.com/52338219/203683508-8308d0e9-b1d7-4c5a-8822-b6d97c7b0e10.png)  
@@ -33,3 +33,8 @@ p4 set P4CLIENT=WorkSpace全称
 
 **2.点击SelectFolder选择要导入的文件夹路径，点击“批量替换”开始工作**  
 等待“批处理完成”提示出现。可以回看过程中的记录。
+
+## Use Without P4
+如果不用P4，也是可以使用此工具的。  
+点击“批量替换”之前，将右边“自动Checkout”关闭即可。  
+![图片7](https://user-images.githubusercontent.com/52338219/203690232-6e849533-3146-4782-8c96-1cfa001ca0e0.png)
