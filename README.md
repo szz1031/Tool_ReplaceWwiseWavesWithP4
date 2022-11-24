@@ -1,7 +1,8 @@
 # Tool_ReplaceWwiseWavesWithP4
 *(English Version will be in the upcoming release）*  
 这是一个方便使用P4对Wwise进行版本控制时，快速迭代音频资源的小工具  
-可以免去迭代资源时，人工找到wwise内路径并且手动选择orginal文件夹的步骤
+可以免去反复迭代资源时的繁琐步骤
+**请注意：本工具仅在Wwise2021版本进行了测试**
 
 ![图片1](https://user-images.githubusercontent.com/52338219/203681670-5960f688-7874-41e0-a6ed-0f0510015535.png)  
 ## [下载页面](https://github.com/szz1031/Tool_ReplaceWwiseWavesWithP4/releases)
