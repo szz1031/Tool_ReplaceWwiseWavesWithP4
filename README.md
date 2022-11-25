@@ -5,7 +5,7 @@
 **请注意：本工具仅在Wwise2021版本进行了测试**
 
 ![图片1](https://user-images.githubusercontent.com/52338219/203681670-5960f688-7874-41e0-a6ed-0f0510015535.png)  
-## [下载页面](https://github.com/szz1031/Tool_ReplaceWwiseWavesWithP4/releases)
+## [点击此处跳转下载界面](https://github.com/szz1031/Tool_ReplaceWwiseWavesWithP4/releases)
 
 ## Installation
 **1.电脑中安装了Perforce的情况下，打开控制台（Win+R 输入cmd然后回车）**  
@@ -26,14 +26,17 @@ p4 set P4CLIENT=WorkSpace全称
 
 ## How To Use  
 **1.开启Wwise后运行 .exe工具**  
-它会自动尝试连接wwise和登录P4。 如果成功的话会如下显示：  
+它会自动尝试连接wwise和登录P4  
+*如果WAMP端口不是8070，则会连接失败，此时请工具里填上正确的port然后点击Connect Wwise*  
+*如果P4登录失败，请点击显示P4账号信息进行检查，然后回到Install的第二步*  
+全部成功的话会如下显示：  
 ![图片6](https://user-images.githubusercontent.com/52338219/203683508-8308d0e9-b1d7-4c5a-8822-b6d97c7b0e10.png)  
-如果WAMP端口不是8070，则会连接失败，此时请工具里填上正确的port然后点击Connect Wwise  
-如果P4登录失败，请点击显示P4账号信息进行检查，然后回到Install的第二步  
+
 
 **2.点击SelectFolder选择要导入的文件夹路径，点击“批量替换”开始工作**  
 等待“批处理完成”提示出现  
-可以回看过程中的记录。如果有文件在Wwise内找不到可替换的对象时（新增的资源），则会被归档。  
+可以回看过程中的记录  
+*如果有文件在Wwise内找不到可替换的对象时（新增的资源），则会被归档*  
 ![图片8](https://user-images.githubusercontent.com/52338219/203745063-d02d7e4a-0281-4bba-98a3-b47180be1cf9.png)  
 *(“完美替换”是指成功替换并且在P4中成功checkout)*
 
