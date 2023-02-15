@@ -8,10 +8,10 @@
 ## [点击此处跳转下载界面](https://github.com/szz1031/Tool_ReplaceWwiseWavesWithP4/releases)
 
 ## Installation
-**1.电脑中安装了Perforce的情况下，打开控制台（Win+R 输入cmd然后回车）**  
-![图片2](https://user-images.githubusercontent.com/52338219/203682044-033c33dd-a1ba-47b3-99c8-997dae674d28.png)
+**1.【不用P4的，可以直接跳转至第3步】打开控制台（Win+R 输入cmd然后回车）**  
 
-**2.依次输入如下指令，配置电脑环境的P4账号密码等信息：**  
+
+**2.依次输入如下指令，配置电脑环境的P4账号密码等信息(每输入一行需要回车才生效！)：**  
 p4 set P4PORT=您的P4服务器地址和端口  
 p4 set P4USER=您的P4用户名  
 p4 set P4PASSWD=您的P4密码  
@@ -20,7 +20,7 @@ p4 set P4CLIENT=WorkSpace全称
 (可以直接从P4登录窗口粘贴)  
 
 
-**3.打开wwise的用户设置，将WAMPport改为8070（可以不用改）**  
+**3.打开wwise的用户设置，将WAMPport改为8070（此处不修改的话稍后要修改工具的设置）**  
 ![图片5](https://user-images.githubusercontent.com/52338219/203683152-dbbe03b2-5893-44b8-ab8d-38d9315108d2.png)
 
 
@@ -50,7 +50,9 @@ Wechat: kkxszz
 Email: kkxszz@gmail.com  
 
 ## 写给开发者
-开发环境是Python3.7，需要安装waapiclient （环境搭建可以参考溪夜老师的博客）  
-szz_wwiseManager.py 中留有一些我封装过的常用waapi功能，欢迎交流~  
+开发环境是Python3.7，需要安装以下两个模块:  
+pip install p4python  
+pip install waapi-client  
+欢迎交流~  
 ![image](https://user-images.githubusercontent.com/52338219/203762564-8c1877a2-3900-4f23-addb-ce5aa2cf8c29.png)
 
