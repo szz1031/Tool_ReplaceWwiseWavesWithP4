@@ -1,30 +1,144 @@
-import tkinter as tk
-import tkinter.font as tkFont
-from tkinter import filedialog,Canvas
-from szz_wwiseManager import WwiseManager
-from szz_p4Manager import p4Manager
+import sys
 import os
 import stat
 import shutil
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QTextEdit, QFileDialog, QLabel, QLineEdit, QCheckBox,QFrame
+from PyQt5.QtCore import Qt,QRect
+from PyQt5.QtGui import QFont
+from szz_wwiseManager import WwiseManager
+from szz_p4Manager import p4Manager
 
 
+class GUI(QMainWindow):
+    wwise = 0
+    reaper = 0
+    p4 = 0
+    wwiseProjectPathRoot = ''
+    path = ''
+    useP4 = False
 
-class GUI:
-    wwise=0
-    reaper=0
-    wwiseProjectPathRoot=''
-    path=''
-    useP4=False
-    
     def __init__(self):
-        self.InitalMainWindow()
+        super(GUI, self).__init__()
+
+        self.setWindowTitle("ReplaceWwiseWavesWithP4 @SZZ    Version: 1.4  2023.04.13")
+        self.setGeometry(100, 100, 880, 600)
+        self.setStyleSheet("""
+        QWidget {
+            background-color: #2B2B2B;
+        }
+        QLabel {
+            color: #F0F0F0;
+        }
+        QLineEdit {
+            color: #FFFFFF;  
+            background-color: transparent;
+            border: 1px solid #5A5A5A;
+        }
+        QPushButton {
+            font-family: "微软雅黑";
+            background-color: #828282;
+            color: #F0F0F0;
+            border: 1px solid #5A5A5A;
+            padding: 4px;
+        }
+        QPushButton:hover {
+            background-color: #5A5A5A;
+        }
+        QPushButton:pressed {
+            background-color: #787878;
+        }
+        QTextEdit {
+            background-color: #464646;
+            color: #F0F0F0;
+            border: 1px solid #5A5A5A;
+        }
+        QCheckBox {
+            color: #F0F0F0;
+        }
+        """)
+        self.initUI()
+
+        self.connectWwise()
+        self.updateP4Usage()
+
+    def initUI(self):
+        
+        # Font
+        bold_font = QFont()
+        bold_font.setBold(True)
+        bold_font.setPointSize(13)
+        
+        button0 = QPushButton("连接到 Wwise", self)
+        button0.clicked.connect(self.connectWwise)
+        button0.setGeometry(15, 65, 110, 30)
+
+        label = QLabel("Waapi Port :", self)
+        label.setGeometry(8, 30, 70, 20)
+
+        self.entry = QLineEdit("8070", self)
+        self.entry.setGeometry(90, 30, 35, 20)
+
+        button1 = QPushButton("2.自动导入Wwise", self)
+        button1.setFont(bold_font)
+        button1.clicked.connect(self.Process)
+        button1.setGeometry(500, 40, 190, 50)
+
+        button99 = QPushButton("显示P4账号信息", self)
+        button99.clicked.connect(self.showP4config)
+        button99.setGeometry(750, 30, 100, 30)
+
+        self.check1 = QCheckBox("同时自动Checkout", self)
+        self.check1.stateChanged.connect(self.updateP4Usage)
+        self.check1.setGeometry(540, 100, 120, 30)
+
+        self.labelFolder = QLabel("请选择需要导入的文件夹...", self)
+        self.labelFolder.setWordWrap(True)  # 允许自动换行
+        self.labelFolder.setAlignment(Qt.AlignCenter)  # 设置文本居中对齐
+        self.labelFolder.setGeometry(180, 15, 260, 60)
+
+        buttonFolder = QPushButton("1.选择文件夹", self)
+        buttonFolder.setFont(bold_font)
+        buttonFolder.clicked.connect(self.UpdatePath)
+        buttonFolder.setGeometry(180, 90, 150, 50)
+
+        buttonFolder2 = QPushButton("Open Folder", self)
+        buttonFolder2.clicked.connect(self.OpenPath)
+        buttonFolder2.setGeometry(330, 90, 100, 50)
+
+        self.logtext = QTextEdit(self)
+        self.logtext.setReadOnly(True)
+        self.logtext.setGeometry(10, 150, 860, 430)
+        
+        # 添加分割线
+        self.line1 = QFrame(self)
+        self.line1.setStyleSheet("background-color: #787878")
+        self.line1.setGeometry(QRect(135, 15, 2, 130))
+        self.line1.setFrameShape(QFrame.VLine)
+        self.line1.setFrameShadow(QFrame.Sunken)
+
+        self.line2 = QFrame(self)
+        self.line2.setStyleSheet("background-color: #787878")
+        self.line2.setGeometry(QRect(470, 15, 2, 130))
+        self.line2.setFrameShape(QFrame.VLine)
+        self.line2.setFrameShadow(QFrame.Sunken)
+
+        self.line3 = QFrame(self)
+        self.line3.setStyleSheet("background-color: #787878")
+        self.line3.setGeometry(QRect(720, 15, 2, 130))
+        self.line3.setFrameShape(QFrame.VLine)
+        self.line3.setFrameShadow(QFrame.Sunken)
+
+    def PrintLog(self, string):
+        self.logtext.append(string + '\n')
+        self.logtext.ensureCursorVisible()
+        QApplication.processEvents()
         
 
     def connectWwise(self):
         self.PrintLog("")
-        self.PrintLog("    使用"+varPortID.get()+"端口连接Wwise...")
+        self.PrintLog("    尝试使用"+self.entry.text()+"端口连接Wwise...")
         try:
-            self.wwise=WwiseManager(varPortID.get())
+            self.wwise=WwiseManager(self.entry.text())
             self.wwiseProjectPathRoot=self.wwise.WwiseProjectPathRoot
         except:
             self.PrintLog("<<< 连接Wwise失败, 请打开Wwise或者检查Wwise WAMP端口设置 >>>")
@@ -46,95 +160,22 @@ class GUI:
         self.PrintLog(" --- P4 WorkSpace："+p4.client)
         self.PrintLog("")
         
-
-    def InitalMainWindow(self,in_width="880",in_height="600",in_version="1.3",in_titleName="ReplaceWwiseWavesWithP4",in_autherName="SZZ",in_date="2022.11.23"): # 窗口布局
-  
-        window=tk.Tk()
-        window.title(in_titleName+' @'+in_autherName+'    Version: '+in_version+'  '+in_date)
-        window.geometry(in_width+'x'+in_height)
-        f1 = tkFont.Font(family='microsoft yahei', size=11, weight='bold')
-        f2 = tkFont.Font(family='times', size=11, slant='italic')
-
-        # 布线
-        canvas = Canvas(window,height=200,width=800)
-        canvas.create_line(135, 15, 135, 140,dash=(4, 2))
-        canvas.create_line(470, 15, 470, 140,dash=(4, 2))
-        canvas.create_line(720, 15, 720, 140,dash=(4, 2))
-        canvas.place(x=0,y=0)
-
-
-        # 按钮
-        button0=tk.Button(window,text="Connect Wwise",command=self.connectWwise)
-        button0.place(x=15,y=65)
-
-        global varPortID
-        varPortID=tk.StringVar()
-        varPortID.set("8070")
-        entry=tk.Entry(window,textvariable=varPortID,width=4)
-        entry.place(x=90,y=30)
-        lable=tk.Label(window,text="Waapi Port :")
-        lable.place(x=8,y=30)
-        
-        
-        button1=tk.Button(window,text="2.批量替换wwise内wav",font=f1,command=self.Process)
-        button1.place(x=500,y=50)
-
-        button99=tk.Button(window,text="显示P4账号信息",command=self.showP4config)
-        button99.place(x=750,y=30)
-        global varInt
-        varInt=tk.BooleanVar()
-        varInt.set(1)
-        check1=tk.Checkbutton(window,text="自动Checkout",variable=varInt,command=self.updateP4Usage)
-        check1.place(x=745,y=70)
-
-        
-        button88=tk.Button(window,text="test",command=self.test)
-        #button88.place(x=700,y=60)
-
-        global varTextFolder
-        varTextFolder=tk.StringVar()
-        varTextFolder.set("Please select a folder")
-        labelFolder=tk.Label(window,textvariable = varTextFolder,wraplength=260)
-        labelFolder.place(x=150,y=15)
-        buttonFolder=tk.Button(window,text="1.Select Folder",font=f1,command = self.UpdatePath)
-        buttonFolder.place(x=150,y=90)
-        buttonFolder2=tk.Button(window,text="Open Folder",font=f2,command = self.OpenPath)
-        buttonFolder2.place(x=300,y=90)
-        
-        
-        # Log 窗口
-        self.logtext=tk.Text(window,width=120,height=30)
-        self.logtext.place(x=10,y=150,anchor=tk.NW)
-
-
-        
-        self.connectWwise()
-        self.updateP4Usage()
-        window.lift()
-        window.mainloop()
     
-    def PrintLog(self,string):  # 在用户界面里打印提示 
-        self.logtext.insert(tk.END, string + '\n'+'\n') 
-        self.logtext.see(tk.END)
-        self.logtext.update()
-    
-    def UpdatePath(self):                   # 用户选择文件路径
-        self.PrintLog("")
-        self.PrintLog("Select Folder ...")
-        path_ = tk.filedialog.askdirectory()   
-        if path_=='':
-            return
-        self.path = path_
-        varTextFolder.set(path_)
-        self.PrintLog ("Get Directory: "+ path_)
-        _count=0
-        for file,root in self.findallfiles(self.path):
-            fname,ext=os.path.splitext(file)
-            if ext!=".wav":
-                continue
-            _count+=1
-        self.PrintLog("  总共有 "+str(_count)+" 个待导入wave文件")
-        
+    def UpdatePath(self):
+        self.path = QFileDialog.getExistingDirectory(self, "请选择一个文件夹", os.path.expanduser("~"))
+        if self.path:
+            self.labelFolder.setText(self.path)
+            self.PrintLog("选中文件夹: " + self.path)
+            
+            #self.PrintLog ("Get Directory: "+ self.path)
+            _count=0
+            for file,root in self.findallfiles(self.path):
+                fname,ext=os.path.splitext(file)
+                if ext!=".wav":
+                    continue
+                _count+=1
+            self.PrintLog("  总共有 "+str(_count)+" 个待导入wave文件")
+            
         
     def OpenPath(self):
         if self.path!='':
@@ -154,26 +195,22 @@ class GUI:
         return
     
     def updateP4Usage(self):
-        
-        if varInt.get():
-            
-            self.PrintLog("")
+        self.useP4 = self.check1.isChecked()
+        if self.useP4:
             self.PrintLog("    尝试登陆P4...")
-            p4=p4Manager()
             try:
-                p4.forceConnect()
-                self.PrintLog("    WorkSpace:"+str(p4.workSpaceName))
-                self.PrintLog("P4登录成功!")
+                self.p4 = p4Manager()
+                self.p4.forceConnect()
+                self.PrintLog("    WorkSpace:"+str(self.p4.workSpaceName))
+                self.PrintLog("    P4登录成功!自动Checkout已开启")
             except:
-                self.PrintLog("《《《P4无法登录，禁用自动checkout功能！请检查P4配置信息是否正确》》》")
-                self.PrintLog("《您也可以无视以上提示，手动checkout文件》")
-                varInt.set(0)
+                self.PrintLog("<<< 连接P4失败, 请检查P4设置 >>>")
+                self.check1.setChecked(False)
+                self.PrintLog("    P4功能已禁用")
+                return
+            #self.PrintLog("P4功能已成功开启")
+
             
-            self.useP4=varInt.get()
-            
-        else:
-            self.useP4=varInt.get()
-            self.PrintLog("选择禁用P4")
             
     
             
@@ -239,7 +276,7 @@ class GUI:
         return
     
     def replaceFile(self,in_newf,in_oldf):
-        if varInt.get():
+        if self.useP4:
             try:
                 p4=p4Manager()
                 p4.checkout(in_oldf)
@@ -277,5 +314,9 @@ class GUI:
                 self.PrintLog("        ----！强制替换成功, 请稍后手动进行版本控制")
                 return False
         
-newWindow=GUI()
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    gui = GUI()
+    gui.show()
+    sys.exit(app.exec_())
 
