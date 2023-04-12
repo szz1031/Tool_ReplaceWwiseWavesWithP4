@@ -50,7 +50,7 @@ class GUI(QMainWindow):
         QTextEdit {
             background-color: #464646;
             color: #F0F0F0;
-            border: 1px solid #5A5A5A;
+            border: 1px solid #000000;
         }
         QCheckBox {
             color: #F0F0F0;
