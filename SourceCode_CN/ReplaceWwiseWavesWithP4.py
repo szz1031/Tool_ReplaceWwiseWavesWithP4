@@ -88,7 +88,6 @@ class P4ConfigDialog(QDialog):
             f.write(f"p4_workspace={p4_workspace}\n")
 
 class GUI(QMainWindow):
-    p4 = p4Manager()
     wwise = 0
     reaper = 0
     p4 = 0
@@ -99,7 +98,7 @@ class GUI(QMainWindow):
     def __init__(self):
         super(GUI, self).__init__()
         self.p4 = p4Manager()
-        self.setWindowTitle("ReplaceWwiseWavesWithP4 @SZZ    Version: 2.0  2023.04.14")
+        self.setWindowTitle("ReplaceWwiseWavesWithP4 @SZZ    Version: 2.1  2023.04.14")
         self.setGeometry(100, 100, 880, 600)
         self.setStyleSheet("""
         QWidget {
@@ -137,6 +136,24 @@ class GUI(QMainWindow):
         """)
         self.initUI()
         self.connectWwise()
+        self.load_p4_config()
+
+    def load_p4_config(self):
+        config_file = "p4_config.txt"
+        if os.path.exists(config_file):
+            with open(config_file, "r") as f:
+                lines = f.readlines()
+                p4_server = lines[0].strip().split("=")[-1]
+                p4_username = lines[1].strip().split("=")[-1]
+                p4_password = lines[2].strip().split("=")[-1]
+                p4_workspace = lines[3].strip().split("=")[-1]
+
+                # Update p4Manager instance with loaded configuration
+                self.p4 = p4Manager()
+                self.p4.p4client.port = p4_server
+                self.p4.p4client.user = p4_username
+                self.p4.psw = p4_password
+                self.p4.p4client.client = p4_workspace
 
     def show_p4_config_dialog(self):
         dialog = P4ConfigDialog(self)
@@ -148,37 +165,41 @@ class GUI(QMainWindow):
             p4_password = dialog.p4_password_input.text()
             p4_workspace = dialog.p4_workspace_input.text()
 
-
-            # self.PrintLog("--- P4服务器地址及端口：{}".format(p4_server))
-            # self.PrintLog("--- P4账号：{}".format(p4_username))
-            # self.PrintLog("--- P4密码：{}".format(p4_password))
-            # self.PrintLog("--- P4 WorkSpace：{}".format(p4_workspace))
-
             self.p4.update_p4_config(p4_server, p4_username, p4_password, p4_workspace)
             self.check1.setChecked(1)
             self.updateP4Usage()
     
+
+
     def initUI(self):
         
         # Font
         bold_font = QFont()
         bold_font.setBold(True)
         bold_font.setPointSize(13)
+
+        font2 = QFont()
+        font2.setPointSize(10)
         
         button0 = QPushButton("连接到 Wwise", self)
         button0.clicked.connect(self.connectWwise)
-        button0.setGeometry(15, 70, 110, 30)
+        button0.setGeometry(15, 75, 110, 30)
+
+        self.wwise_status_label = QLabel("Status: Not connected", self)
+        self.wwise_status_label.setFont(font2)
+        self.wwise_status_label.setGeometry(0, 115, 140, 25)
+        self.wwise_status_label.setAlignment(Qt.AlignCenter)
 
         label = QLabel("Waapi Port :", self)
-        label.setGeometry(8, 30, 70, 20)
+        label.setGeometry(8, 35, 70, 20)
 
         self.entry = QLineEdit("8070", self)
-        self.entry.setGeometry(90, 30, 35, 20)
+        self.entry.setGeometry(90, 35, 35, 20)
 
         button1 = QPushButton("2.自动导入Wwise", self)
         button1.setFont(bold_font)
         button1.clicked.connect(self.Process)
-        button1.setGeometry(500, 40, 190, 50)
+        button1.setGeometry(500, 65, 190, 50)
 
         #button99 = QPushButton("显示P4账号信息", self)
         #button99.clicked.connect(self.showP4config)
@@ -186,21 +207,21 @@ class GUI(QMainWindow):
 
         self.check1 = QCheckBox("同时自动Checkout", self)
         self.check1.stateChanged.connect(self.updateP4Usage)
-        self.check1.setGeometry(540, 100, 120, 30)
+        self.check1.setGeometry(540, 118, 120, 30)
 
         self.labelFolder = QLabel("请选择需要导入的文件夹...", self)
         self.labelFolder.setWordWrap(True)  # 允许自动换行
         self.labelFolder.setAlignment(Qt.AlignCenter)  # 设置文本居中对齐
-        self.labelFolder.setGeometry(180, 15, 260, 60)
+        self.labelFolder.setGeometry(180, 10, 260, 60)
 
         buttonFolder = QPushButton("1.选择文件夹", self)
         buttonFolder.setFont(bold_font)
         buttonFolder.clicked.connect(self.UpdatePath)
-        buttonFolder.setGeometry(180, 90, 150, 50)
+        buttonFolder.setGeometry(180, 65, 150, 50)
 
         buttonFolder2 = QPushButton("Open Folder", self)
         buttonFolder2.clicked.connect(self.OpenPath)
-        buttonFolder2.setGeometry(340, 90, 100, 50)
+        buttonFolder2.setGeometry(340, 65, 100, 50)
 
         self.logtext = QTextEdit(self)
         self.logtext.setReadOnly(True)
@@ -226,7 +247,7 @@ class GUI(QMainWindow):
         self.line3.setFrameShadow(QFrame.Sunken)
 
         self.config_p4_button = QPushButton("配置P4账号信息", self)
-        self.config_p4_button.setGeometry(750, 65, 100, 30)
+        self.config_p4_button.setGeometry(750, 75, 100, 30)
         self.config_p4_button.clicked.connect(self.show_p4_config_dialog)
         
     def PrintLog(self, string):
@@ -243,12 +264,18 @@ class GUI(QMainWindow):
             self.wwiseProjectPathRoot=self.wwise.WwiseProjectPathRoot
         except:
             self.PrintLog("<<< 连接Wwise失败, 请打开Wwise或者检查Wwise WAMP端口设置 >>>")
+            self.wwise_status_label.setText("Status: Failed")
+            self.wwise_status_label.setStyleSheet("color: red;")
             return
         if self.wwise and self.wwiseProjectPathRoot:
+            self.wwise_status_label.setText("Status: Connected")
             self.PrintLog("    Wwise工程："+self.wwiseProjectPathRoot)
             self.PrintLog("=== 连接Wwise成功! ===")
+            self.wwise_status_label.setStyleSheet("color: green;")
         else:
             self.PrintLog("<<< 连接Wwise失败, 请打开Wwise或者检查Wwise WAMP端口设置 >>>")
+            self.wwise_status_label.setText("Status: Failed")
+            self.wwise_status_label.setStyleSheet("color: red;")
       
     def showP4config(self):
         '''
@@ -262,8 +289,9 @@ class GUI(QMainWindow):
         
     
     def UpdatePath(self):
-        self.path = QFileDialog.getExistingDirectory(self, "请选择一个文件夹", os.path.expanduser("~"))
-        if self.path:
+        _path=QFileDialog.getExistingDirectory(self, "请选择一个文件夹", os.path.expanduser("~"))
+        if _path:
+            self.path = _path
             self.labelFolder.setText(self.path)
             
             self.PrintLog("")
@@ -299,6 +327,7 @@ class GUI(QMainWindow):
     def updateP4Usage(self):
         self.useP4 = self.check1.isChecked()
         if self.useP4:
+            #FIXME
             self.PrintLog("")
             self.PrintLog("... 尝试使用以下配置连接P4 ...")
             self.showP4config()
@@ -306,9 +335,9 @@ class GUI(QMainWindow):
                 self.p4.forceConnect()
                 self.PrintLog("=== P4登录成功!自动Checkout已开启 ===")
             except:
-                self.PrintLog("<<< 连接P4失败, 请检查P4设置 >>>")
+                self.PrintLog("<<< 连接P4失败 >>>")
                 self.check1.setChecked(False)
-                self.PrintLog("=== P4功能已禁用 ===")
+                self.PrintLog("=== CheckOut已禁用，请点击“配置P4账号信息”修改配置 ===")
                 return
             #self.PrintLog("P4功能已成功开启")
 
@@ -341,7 +370,7 @@ class GUI(QMainWindow):
             _count+=1
             _oldFile=self.findFileInRoot(fname,_originFolder)
             if _oldFile:
-                self.PrintLog("    *准备替换 "+str("\Originals\\"+_oldFile.split("\Originals\\")[-1])+" ...")
+                self.PrintLog("    *替换 "+str("\Originals\\"+_oldFile.split("\Originals\\")[-1])+" ...")
                 if self.replaceFile(_fullname,_oldFile):
                     _count1+=1
                 #print("new="+_fullname)
