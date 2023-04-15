@@ -34,5 +34,5 @@ pip install p4python
 pip install waapi-client  
 pip install PyQt5  
 顺便分享一些waapi封装库，欢迎交流~  
-![image](https://user-images.githubusercontent.com/52338219/203762564-8c1877a2-3900-4f23-addb-ce5aa2cf8c29.png)
-
+![image](https://user-images.githubusercontent.com/52338219/203762564-8c1877a2-3900-4f23-addb-ce5aa2cf8c29.png)  
+非码出身，该分享肯定有很多不足之处，非常欢迎接受同行的批评和建议！  
