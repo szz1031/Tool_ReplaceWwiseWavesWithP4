@@ -8,8 +8,7 @@
 
 ## How To Use  
 **1.开启Wwise后运行 .exe工具**  
-它会自动尝试连接wwise
-*如果您的Wwise工程内WAMP端口不是8070，则会连接失败，此时请工具里填上正确的port然后点击“连接到Wwise”*   
+请工具里填上正确的WAMP端口(默认是8080)然后点击“连接到Wwise”   
 成功的话会如下显示：  
 ![图1](https://user-images.githubusercontent.com/52338219/232001837-74939a9a-2270-419d-9c55-f1af6e014baa.png)  
 **2.【不使用P4可以跳过此步骤】点击“配置P4账号信息”进行账号设置**  
