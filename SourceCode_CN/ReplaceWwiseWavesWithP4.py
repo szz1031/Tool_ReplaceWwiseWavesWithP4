@@ -98,7 +98,7 @@ class GUI(QMainWindow):
     def __init__(self):
         super(GUI, self).__init__()
         self.p4 = p4Manager()
-        self.setWindowTitle("ReplaceWwiseWavesWithP4 @SZZ    Version: 2.1  2023.04.14")
+        self.setWindowTitle("ReplaceWwiseWavesWithP4 @SZZ    Version: 2.2  2023.04.21")
         self.setGeometry(100, 100, 880, 600)
         self.setStyleSheet("""
         QWidget {
@@ -135,7 +135,7 @@ class GUI(QMainWindow):
         }
         """)
         self.initUI()
-        self.connectWwise()
+        #self.connectWwise()
         self.load_p4_config()
 
     def load_p4_config(self):
@@ -179,7 +179,7 @@ class GUI(QMainWindow):
         bold_font.setPointSize(13)
 
         font2 = QFont()
-        font2.setPointSize(10)
+        font2.setPointSize(8)
         
         button0 = QPushButton("连接到 Wwise", self)
         button0.clicked.connect(self.connectWwise)

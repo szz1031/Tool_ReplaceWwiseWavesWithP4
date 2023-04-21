@@ -1,6 +1,8 @@
 from waapi import WaapiClient
 import os
 from pprint import pprint
+from concurrent.futures import ThreadPoolExecutor, wait
+import asyncio
 
 class WwiseManager:
 
@@ -25,17 +27,35 @@ class WwiseManager:
     
     myUrl=""
     
+    def try_connect_waapi(self):
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            with WaapiClient(url=self.myUrl) as client:
+                client.call("ak.soundengine.postMsgMonitor", self._msgToArgs("Waapi Connect Success"))
+                return True
+        except Exception as e:
+            print(f"Error connecting to Wwise: {e}")
+            return False
+
     def __init__(self,in_portId='8070'):
         self.myUrl= "ws://127.0.0.1:"+in_portId+"/waapi" # WAMP port 
         self._lastSelectedObject=self.defaultSelectedObject
-        try:
-            with WaapiClient(url=self.myUrl) as client:             
-                client.call("ak.soundengine.postMsgMonitor",self._msgToArgs("Waapi Connect Success"))
-        except:
-            return
-        self._getWwiseInfo()
-        self._getWwiseProjectInfo()
-        
+        timeout = 5  # 设置超时时间，单位为秒
+
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(self.try_connect_waapi)
+            done, not_done = wait([future], timeout=timeout)
+
+            if future in done:
+                if future.result():
+                    self._getWwiseInfo()
+                    self._getWwiseProjectInfo()
+                else:
+                    return
+            else:
+                print("Connection to Wwise timed out.")
+                return
         
     
     def _msgToArgs(self,msg): #在wwise里打log的格式转换
