@@ -1,6 +1,6 @@
 # Tool_ReplaceWwiseWavesWithP4
 
-*(English Version will be in the upcoming release）*  
+**[切换到英文 Switch to English](https://github.com/szz1031/Tool_ReplaceWwiseWavesWithP4/blob/main/README.en-US.md)**  
 
 这是一个方便使用P4对Wwise进行版本控制时，快速迭代音频资源的小工具  
 
