@@ -9,7 +9,7 @@ class p4Manager:
         self.p4client = P4()
         self.workSpaceName=self.p4client.client
         self.psw=self.p4client.password
-        print("init")
+        print("P4Manager init")
 
     # 添加此方法以更新P4配置
     def update_p4_config(self, p4_server, p4_username, p4_password, p4_workspace):
@@ -20,7 +20,7 @@ class p4Manager:
         self.p4client.password = p4_password
         self.psw=p4_password
         self.p4client.client = p4_workspace
-        print("Update P4")
+        print("Update P4 Setting")
 
     def test(self):
         
@@ -79,5 +79,5 @@ class p4Manager:
         #self.p4client.disconnect()
 
 
-#new=p4Manager()
+new=p4Manager()
 #new.test()

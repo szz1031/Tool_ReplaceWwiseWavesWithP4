@@ -1,4 +1,4 @@
-p4_server=ssl:192.168.1.170:1666
+p4_server=ssl:192.168.1.170:123
 p4_username=Program
 p4_password=program
 p4_workspace=kkxszz_DevMain
