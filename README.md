@@ -11,27 +11,30 @@
 ## How To Use  
 
 
-### 1.开启Wwise后运行 .exe工具  
-
-请工具里填上正确的WAMP端口(Wwise默认是8080)然后点击“连接到Wwise”   
-
-![图1](https://user-images.githubusercontent.com/52338219/232001837-74939a9a-2270-419d-9c55-f1af6e014baa.png)  
-
-
-### 2.【不使用P4可以跳过此步骤】点击“配置P4账号信息”进行账号设置  
+### 1.【可选】点击“设置-设置P4账号信息”进行账号设置  
 
 您的设置会保存到本地，下次打开时不用再次输入   
 
-![image](https://user-images.githubusercontent.com/52338219/232003095-8bd136cf-994e-4016-a8e5-a97fb1521f5c.png)  
+![2](https://github.com/szz1031/Tool_ReplaceWwiseWavesWithP4/assets/52338219/fc8f65cc-9508-4ae3-b22a-9ba4495b9b89)
 
 
-### 3.点击SelectFolder选择要导入的文件夹路径，点击“批量替换”开始工作  
+### 2.点击“选择文件夹”选择要导入的文件夹路径  
   
-如果有文件在Wwise内找不到可替换的对象时，则会被归档到原路径下的一个文件夹内  
+选择完毕之后，可以点击中间的“在文件夹浏览器中打开”进行快速预览
 
-![image](https://user-images.githubusercontent.com/52338219/232007129-070b0331-401f-47c6-b411-1d1d836ef875.png)  
+![3](https://github.com/szz1031/Tool_ReplaceWwiseWavesWithP4/assets/52338219/46f52f3e-7787-4ada-9bde-840588185e50)
 
-*(“完美替换”是指成功替换并且在P4中成功checkout)*
+### （可选）使用Reaper导出 （该功能不稳定，谨慎使用）
+
+使用此功能，需要给Reaper配置python环境，[可参考](https://www.bilibili.com/read/cv26536797/)  
+该工具会抓取当前激活的reaper工程，按照region matrix设置的情况，导出region命名的wave文件，归档到reaper工程目录内。  
+导出后，可以点击“在文件夹浏览器中打开”进行快速预览
+
+### 3.点击“自动导入Wwise”开始批量导入
+
+需要在右侧正确填写Wwise工程设置里的Wwise端口，默认是8080  
+(可选)如果配置了P4账号，打勾以便自动checkout
+![4](https://github.com/szz1031/Tool_ReplaceWwiseWavesWithP4/assets/52338219/b0cbfcd5-29d1-4e3d-909b-28978e022331)
 
 
 ## Contact
@@ -41,12 +44,13 @@ Email: kkxszz@gmail.com
 
 ## 写给开发者  
 
-开发环境是Python3.7，需要安装以下模块:  
+开发环境是Python3.9(reapy模块和PyQt对此有硬性要求)，需要安装以下模块:  
 
 ```sh
 $ pip install p4python  
 $ pip install waapi-client  
 $ pip install PyQt5  
+$ pip install python-reapy  
 ```
 
 顺便分享一些waapi封装库，欢迎交流~  
