@@ -166,7 +166,7 @@ class GUI(QMainWindow):
         print(self.reaper.projTitle)
         if self.reaper.connection:
             self.PrintLog("连接Reaper工程成功！ 连接到的工程为："+self.reaper.projTitle)
-            #self.PrintLog("请确认以上信息无误")
+            self.PrintLog("Reaper工程地址为: "+self.reaper.projPath.split(self.reaper.projTitle)[0])
             self.PrintLog("")
             
         else:
@@ -186,7 +186,8 @@ class GUI(QMainWindow):
         #print (_timeStomp)
         if not self.path:
             _timeStomp=time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
-            self.path=os.path.join(os.path.expanduser("~"), 'Desktop')+"\Reaper音效导出\\"+self.reaper.projTitle+"\\"+_timeStomp
+            #self.path=os.path.join(os.path.expanduser("~"), 'Desktop')+"\Reaper音效导出\\"+self.reaper.projTitle+"\\"+_timeStomp
+            self.path=self.reaper.projPath.split(self.reaper.projTitle)[0]+"\\"+self.reaper.projTitle+"\\Output\\"+_timeStomp
             self.labelFolder.setText(self.path)
         
 
@@ -200,7 +201,7 @@ class GUI(QMainWindow):
         self.PrintLog("")
 
     def initUI(self):
-        self.setWindowTitle("ReplaceWwiseWavesWithP4 @SZZ    Version: 3.0  2023.09.14")
+        self.setWindowTitle("ReplaceWwiseWavesWithP4 @SZZ    Version: 3.1  2023.11.07")
         self.setGeometry(100, 100, 880, 700)
         self.setStyleSheet("""
         QWidget {

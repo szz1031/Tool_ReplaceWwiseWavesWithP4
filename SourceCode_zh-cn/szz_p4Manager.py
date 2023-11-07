@@ -79,5 +79,4 @@ class p4Manager:
         #self.p4client.disconnect()
 
 
-new=p4Manager()
 #new.test()
