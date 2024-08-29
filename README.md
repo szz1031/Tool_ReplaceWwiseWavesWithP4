@@ -11,12 +11,14 @@
 ## How To Use  
 
 
-### 1.【可选】点击“设置-设置P4账号信息”进行账号设置  
+### 1.点击“设置-多语言导入设置”，来配置你想要替换的语言名称（以Wwise内Original下的文件夹名称为准）  
+如果是替换音效，也要记得打勾SFX。该设置会保存在本地，下次打开时不用再次输入
+![image](https://github.com/user-attachments/assets/d4c943f9-67ae-4c86-a363-140ee260607a)
 
-您的设置会保存到本地，下次打开时不用再次输入   
 
+### 【可选】点击“设置-设置P4账号信息”进行账号设置  
+可以从P4登陆界面直接复制
 ![2](https://github.com/szz1031/Tool_ReplaceWwiseWavesWithP4/assets/52338219/fc8f65cc-9508-4ae3-b22a-9ba4495b9b89)
-
 
 ### 2.点击“选择文件夹”选择要导入的文件夹路径  
   
@@ -51,6 +53,7 @@ $ pip install p4python
 $ pip install waapi-client  
 $ pip install PyQt5  
 $ pip install python-reapy  
+$ pip install qdarkstyle  
 ```
 
 顺便分享一些waapi封装库，欢迎交流~  
