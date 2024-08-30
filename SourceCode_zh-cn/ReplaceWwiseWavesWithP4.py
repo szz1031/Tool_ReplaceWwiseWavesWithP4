@@ -4,7 +4,7 @@ import stat
 import shutil
 import time
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QTextEdit, QFileDialog, QLabel, QLineEdit, QCheckBox, QFrame, QVBoxLayout, QDialog, QAction
-from PyQt5.QtCore import Qt,QRect,QUrl
+from PyQt5.QtCore import Qt,QRect,QUrl,QCoreApplication
 from PyQt5.QtGui import QFont, QDesktopServices
 from szz_wwiseManager import WwiseManager
 from szz_p4Manager import p4Manager
@@ -90,7 +90,70 @@ class P4ConfigDialog(QDialog):
             f.write(f"p4_password={p4_password}\n")
             f.write(f"p4_workspace={p4_workspace}\n")
 
+class LanguageImportDialog(QDialog):
+    def __init__(self, parent=None):
+        super(LanguageImportDialog, self).__init__(parent)
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
+        self.setWindowTitle("多语言导入设置")
+        self.setGeometry(100, 100, 400, 300)
 
+        layout = QVBoxLayout(self)
+
+        self.checkboxes = []
+        self.line_edits = []
+
+        # 第一行，SFX 路径
+        self.sfx_checkbox = QCheckBox("SFX")
+        layout.addWidget(self.sfx_checkbox)
+        self.checkboxes.append(self.sfx_checkbox)
+        
+        # 其他几行，让用户输入字符，例如 Chinese
+        for i in range(4):
+            checkbox = QCheckBox()
+            line_edit = QLineEdit()
+            layout.addWidget(checkbox)
+            layout.addWidget(line_edit)
+            self.checkboxes.append(checkbox)
+            self.line_edits.append(line_edit)
+
+        # 确认按钮
+        self.confirm_button = QPushButton("确认")
+        layout.addWidget(self.confirm_button)
+        self.confirm_button.clicked.connect(self.accept)
+
+        # 读取配置文件
+        self.load_config_from_file()
+
+        if parent:
+            self.move(parent.geometry().center() - self.rect().center())
+
+    def load_config_from_file(self):
+        try:
+            with open("language_import_config.txt", "r") as f:
+                lines = f.readlines()
+                for i, line in enumerate(lines):
+                    if i == 0:
+                        checked, _ = line.strip().split(",")
+                        self.checkboxes[i].setChecked(checked == "1")
+                    else:
+                        checked, text = line.strip().split(",")
+                        self.checkboxes[i].setChecked(checked == "1")
+                        self.line_edits[i-1].setText(text)
+        except FileNotFoundError:
+            pass  # 文件不存在时，不执行任何操作
+
+    def save_config_to_file(self):
+        with open("language_import_config.txt", "w") as f:
+            for i, checkbox in enumerate(self.checkboxes):
+                if i == 0:
+                    f.write(f"{int(checkbox.isChecked())},\n")
+                else:
+                    line_edit = self.line_edits[i-1]
+                    f.write(f"{int(checkbox.isChecked())},{line_edit.text()}\n")
+
+    def accept(self):
+        self.save_config_to_file()
+        super(LanguageImportDialog, self).accept()
 
 class GUI(QMainWindow):
     wwise = 0
@@ -145,19 +208,9 @@ class GUI(QMainWindow):
             self.check1.setChecked(1)
             self.updateP4Usage()
 
-    def show_wwise_config_dialog(self):
-        dialog = P4ConfigDialog(self)
-        result = dialog.exec_()
-
-        if result == QDialog.Accepted:
-            p4_server = dialog.p4_server_input.text()
-            p4_username = dialog.p4_username_input.text()
-            p4_password = dialog.p4_password_input.text()
-            p4_workspace = dialog.p4_workspace_input.text()
-
-            self.p4.update_p4_config(p4_server, p4_username, p4_password, p4_workspace)
-            self.check1.setChecked(1)
-            self.updateP4Usage()
+    def show_language_import_dialog(self):
+        dialog = LanguageImportDialog(self)
+        dialog.exec_()
 
     # Reaper
     def connectReaper(self):
@@ -201,8 +254,9 @@ class GUI(QMainWindow):
         self.PrintLog("")
 
     def initUI(self):
-        self.setWindowTitle("ReplaceWwiseWavesWithP4 @SZZ    Version: 3.1  2023.11.07")
+        self.setWindowTitle("ReplaceWwiseWavesWithP4 @SZZ    Version: 4.0  2024.08.29")
         self.setGeometry(100, 100, 880, 700)
+        QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling) # 设置高DPI缩放
         self.setStyleSheet("""
         QWidget {
             background-color: #2B2B2B;
@@ -265,6 +319,10 @@ class GUI(QMainWindow):
         action_p4setting.triggered.connect(self.show_p4_config_dialog)
         menu_setting.addAction(action_p4setting)
         
+        action_language_import = QAction("多语言导入设置", self)
+        action_language_import.triggered.connect(self.show_language_import_dialog)
+        menu_setting.addAction(action_language_import)
+
         doc_menu = menu_bar.addMenu("说明文档")
         open_doc_action = QAction("GitHub主页", self)
         open_doc_action.triggered.connect(self.open_documentation)
@@ -361,8 +419,9 @@ class GUI(QMainWindow):
 
     def PrintLog(self, string):
         self.logtext.append(string + '\n')
-        self.logtext.ensureCursorVisible()
-        QApplication.processEvents()
+        self.logtext.ensureCursorVisible()  # 确保光标可见，滚动到最低端
+        self.logtext.verticalScrollBar().setValue(self.logtext.verticalScrollBar().maximum())  # 确保滚动条在最低端
+        QApplication.processEvents()  # 处理挂起的事件，确保界面更新
         
 
     def connectWwise(self):
@@ -450,6 +509,18 @@ class GUI(QMainWindow):
                 return
             #self.PrintLog("P4功能已成功开启")
 
+            
+    def load_language_import_config(self):
+        language_paths = []
+        try:
+            with open("language_import_config.txt", "r") as f:
+                lines = f.readlines()
+                for line in lines:
+                    checked, lang = line.strip().split(",")
+                    language_paths.append((checked == "1", lang))
+        except FileNotFoundError:
+            pass
+        return language_paths
       
     def Process(self): 
 
@@ -464,43 +535,55 @@ class GUI(QMainWindow):
            
         self.PrintLog("")
         self.PrintLog("... 开始批处理 ...")
-        _originFolder=self.wwiseProjectPathRoot+"\Originals\SFX\\"
-
-        self.PrintLog("    origin路径为："+_originFolder)
-        self.PrintLog("    下面开始依次处理wave文件...")
-        _count=0
-        _count1=0
-        _count2=0
-        for file,root in self.findallfiles(self.path):
-            _fullname = os.path.join(root,file)
-            _fullname = os.path.normpath(_fullname)  #去掉反斜杠
-            filepath,fullname=os.path.split(_fullname)
-            fname,ext=os.path.splitext(fullname)
-            if ext!='.wav':
+        # 加载用户配置的语言路径
+        language_paths = self.load_language_import_config()
+        
+        _count = 0
+        _count1 = 0
+        _count2 = 0
+        
+        for file, root in self.findallfiles(self.path):
+            _fullname = os.path.join(root, file)
+            _fullname = os.path.normpath(_fullname)  # 去掉反斜杠
+            filepath, fullname = os.path.split(_fullname)
+            fname, ext = os.path.splitext(fullname)
+            if ext != '.wav':
                 continue
+
+            _count += 1
+            found_and_replaced = False
             
-            _count+=1
-            _oldFile=self.findFileInRoot(fname,_originFolder)
-            if _oldFile:
-                self.PrintLog("    *替换 "+str("\Originals\\"+_oldFile.split("\Originals\\")[-1])+" ...")
-                if self.replaceFile(_fullname,_oldFile):
-                    _count1+=1
-                #print("new="+_fullname)
-                #print("old="+_oldFile)
-            else:
-                self.PrintLog("    *跳过"+str(file)+": 在Origin内找不到同名文件!")
-                newpath = self.path+"/SkippedFiles/"
+            for i, (checked, lang) in enumerate(language_paths):
+                if not checked:
+                    continue
+
+                if i == 0:  # 第一项代表 SFX 路径
+                    _originFolder = self.wwiseProjectPathRoot + "\Originals\SFX\\"
+                else:  # 其他项代表用户自定义的路径
+                    _originFolder = self.wwiseProjectPathRoot + f"\Originals\Voices\{lang}\\"
+
+                self.PrintLog(f"    检查路径：{_originFolder}")
+                
+                _oldFile = self.findFileInRoot(fname, _originFolder)
+                if _oldFile:
+                    self.PrintLog("    *替换 {} ...".format('\\Originals\\' + _oldFile.split('\\Originals\\')[-1]))
+                    if self.replaceFile(_fullname, _oldFile):
+                        _count1 += 1
+                    found_and_replaced = True
+                    break  # 一旦找到并替换了文件，跳出当前的路径循环
+
+            if not found_and_replaced:
+                self.PrintLog(f"    *跳过 {str(file)}: 在所有配置的路径中找不到同名文件!")
+                newpath = os.path.join(self.path, "SkippedFiles")
                 if not os.path.exists(newpath):
                     os.makedirs(newpath)
-                shutil.move(_fullname,newpath+fullname)
-                _count2+=1
-                
+                shutil.move(_fullname, os.path.join(newpath, fullname))
+                _count2 += 1
 
         self.PrintLog("")
-        #self.PrintLog("批处理完成! "+str(_count)+"个文件中，完美替换了 "+str(_count1)+" 个文件，跳过了"+str(_count2)+"个文件。")
-        self.PrintLog("批处理完成! "+str(_count)+"个文件中，跳过了"+str(_count2)+"个文件。")
-        if _count2>0:
-            self.PrintLog("跳过的文件已整理到/SkippedFiles/文件夹中")
+        self.PrintLog(f"批处理完成! {str(_count)} 个文件中，成功替换了 {str(_count1)} 个文件，跳过了 {str(_count2)} 个文件。")
+        if _count2 > 0:
+            self.PrintLog("跳过的文件已整理到 /SkippedFiles/ 文件夹中")
 
     
     def findFileInRoot(self,in_fname,in_root,in_ext=".wav"):
@@ -556,6 +639,7 @@ class GUI(QMainWindow):
                 return False
         
 if __name__ == "__main__":
+    QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     app = QApplication(sys.argv)
     gui = GUI()
     gui.show()
